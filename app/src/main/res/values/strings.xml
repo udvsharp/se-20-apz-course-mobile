@@ -1,6 +1,22 @@
 <resources>
     <string name="app_name">ProdEf</string>
-    <string name="title_home">Pomodoro</string>
-    <string name="title_dashboard">Sessions</string>
-    <string name="title_notifications">Profile</string>
+
+    <string name="title_sign_in">Sign in</string>
+    <string name="title_sign_up">Sign up</string>
+    <string name="title_pomodoro">Pomodoro</string>
+    <string name="title_sessions">Sessions</string>
+    <string name="title_profile">Profile</string>
+
+    <string name="welcome">Welcome</string>
+    <string name="sign_in_account">Sign in your account:</string>
+    <string name="enter_to_sign_up">Enter all fields for sign up:</string>
+    <string name="no_account">No account?</string>
+    <string name="sign_in">Sign in</string>
+    <string name="sign_up">Sign up</string>
+    <string name="name">Name</string>
+    <string name="username">Username</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="sign_in_error">Wrong email or password</string>
+    <string name="sign_up_error">Wrong one of the fields</string>
 </resources>

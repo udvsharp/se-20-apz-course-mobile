@@ -3,23 +3,71 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_pomodoro">
+    app:startDestination="@id/signInFragment">
 
     <fragment
-        android:id="@+id/navigation_pomodoro"
+        android:id="@+id/splashFragment"
+        android:name="com.nure.vasyliev.prodef.ui.splash.SplashFragment"
+        android:label="@string/title_pomodoro"
+        tools:layout="@layout/fragment_splash">
+        <action
+            android:id="@+id/toPomodoroFragment"
+            app:destination="@id/pomodoroFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/mobile_navigation"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/toSignInFragment"
+            app:destination="@id/signInFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/mobile_navigation"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/signInFragment"
+        android:name="com.nure.vasyliev.prodef.ui.signIn.SignInFragment"
+        android:label="@string/title_sign_in"
+        tools:layout="@layout/fragment_sign_in">
+        <action
+            android:id="@+id/toPomodoroFragment"
+            app:destination="@id/pomodoroFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/mobile_navigation"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/toSignUpFragment"
+            app:destination="@id/signUpFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="com.nure.vasyliev.prodef.ui.signUp.SignUpFragment"
+        android:label="@string/title_sign_up"
+        tools:layout="@layout/fragment_sign_up">
+        <action
+            android:id="@+id/toPomodoroFragment"
+            app:destination="@id/pomodoroFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/mobile_navigation"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/pomodoroFragment"
         android:name="com.nure.vasyliev.prodef.ui.pomodoro.PomodoroFragment"
-        android:label="@string/title_home"
+        android:label="@string/title_pomodoro"
         tools:layout="@layout/fragment_pomodoro" />
 
     <fragment
-        android:id="@+id/navigation_sessions"
+        android:id="@+id/sessionsFragment"
         android:name="com.nure.vasyliev.prodef.ui.sessions.SessionsFragment"
-        android:label="@string/title_dashboard"
+        android:label="@string/title_sessions"
         tools:layout="@layout/fragment_sessions" />
 
     <fragment
-        android:id="@+id/navigation_profile"
+        android:id="@+id/profileFragment"
         android:name="com.nure.vasyliev.prodef.ui.profile.ProfileFragment"
-        android:label="@string/title_notifications"
+        android:label="@string/title_profile"
         tools:layout="@layout/fragment_profile" />
 </navigation>
