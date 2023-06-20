@@ -19,4 +19,6 @@
     <string name="password">Password</string>
     <string name="sign_in_error">Wrong email or password</string>
     <string name="sign_up_error">Wrong one of the fields</string>
+
+    <string name="time_format">%1$02d:%2$02d</string>
 </resources>
