@@ -1,8 +1,8 @@
 package com.nure.vasyliev.prodef.rest.apis
 
 import com.nure.vasyliev.prodef.model.user.AuthResponse
-import com.nure.vasyliev.prodef.rest.payloads.LoginPayload
-import com.nure.vasyliev.prodef.rest.payloads.RegisterPayload
+import com.nure.vasyliev.prodef.rest.payloads.auth.LoginPayload
+import com.nure.vasyliev.prodef.rest.payloads.auth.RegisterPayload
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST

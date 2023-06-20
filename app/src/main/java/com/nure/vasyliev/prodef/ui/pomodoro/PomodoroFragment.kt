@@ -62,7 +62,7 @@ class PomodoroFragment : Fragment() {
         }
         pomodoroViewModel.isStarted.observe(viewLifecycleOwner) { isStarted ->
             if (isStarted) {
-                binding.ivPlayController.setImageResource(R.drawable.ic_pause)
+                binding.ivPlayController.setImageResource(R.drawable.ic_stop)
                 binding.ivPlayController.setOnClickListener {
                     val intent = Intent(PomodoroService.SEND_STOP)
                     appContext.sendBroadcast(intent)

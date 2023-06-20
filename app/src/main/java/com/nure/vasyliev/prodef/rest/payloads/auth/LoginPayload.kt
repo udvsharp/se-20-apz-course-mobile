@@ -1,4 +1,4 @@
-package com.nure.vasyliev.prodef.rest.payloads
+package com.nure.vasyliev.prodef.rest.payloads.auth
 
 import com.google.gson.annotations.SerializedName
 

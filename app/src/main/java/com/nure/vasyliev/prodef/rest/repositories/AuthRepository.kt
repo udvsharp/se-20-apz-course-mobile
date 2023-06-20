@@ -3,8 +3,8 @@ package com.nure.vasyliev.prodef.rest.repositories
 import com.nure.vasyliev.prodef.model.user.User
 import com.nure.vasyliev.prodef.rest.ApiClient
 import com.nure.vasyliev.prodef.rest.apis.AuthApi
-import com.nure.vasyliev.prodef.rest.payloads.LoginPayload
-import com.nure.vasyliev.prodef.rest.payloads.RegisterPayload
+import com.nure.vasyliev.prodef.rest.payloads.auth.LoginPayload
+import com.nure.vasyliev.prodef.rest.payloads.auth.RegisterPayload
 
 class AuthRepository {
 
