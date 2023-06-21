@@ -6,6 +6,8 @@ data class Pomodoro(
     @SerializedName("createdAt") val createdAt: String,
     @SerializedName("durationMins") val durationMins: Int,
     @SerializedName("finishedEarlier") val finishedEarlier: Boolean,
+    @SerializedName("stopTime") val stopTime: String,
+    @SerializedName("startTime") val startTime: String,
     @SerializedName("id") val id: String,
     @SerializedName("isValid") val isValid: Boolean,
     @SerializedName("task") val task: String,
