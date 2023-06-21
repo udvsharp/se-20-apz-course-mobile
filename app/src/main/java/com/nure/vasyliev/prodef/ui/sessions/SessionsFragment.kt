@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.nure.vasyliev.prodef.MainActivity
 import com.nure.vasyliev.prodef.databinding.FragmentSessionsBinding
 import com.nure.vasyliev.prodef.rest.repositories.PomodoroRepository
@@ -49,6 +49,15 @@ class SessionsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.rvSessions.adapter = sessionAdapter
 
+        binding.fabCreatePomodoro.setOnClickListener {
+            val toCreatePomodoroDialog = SessionsFragmentDirections.toCreatePomodoroDialog()
+            findNavController().navigate(toCreatePomodoroDialog)
+        }
+
+        binding.layoutRefresh.setOnRefreshListener {
+            sessionViewModel.getAllPomodoros()
+        }
+
         setupObservers()
     }
 
@@ -61,7 +70,7 @@ class SessionsFragment : Fragment() {
             sessionAdapter.updateList(sortedPomodoros)
         }
         sessionViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.progressBar.isVisible = isLoading
+            binding.layoutRefresh.isRefreshing = isLoading
         }
     }
 }

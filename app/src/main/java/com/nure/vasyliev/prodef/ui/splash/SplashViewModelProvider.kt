@@ -6,6 +6,7 @@ import com.nure.vasyliev.prodef.rest.TokenInterceptor
 import com.nure.vasyliev.prodef.rest.repositories.PomodoroRepository
 import com.nure.vasyliev.prodef.rest.repositories.SharedPrefsRepository
 
+@Suppress("UNCHECKED_CAST")
 class SplashViewModelFactory(
     private val sharedPrefsRepository: SharedPrefsRepository,
     private val pomodoroRepository: PomodoroRepository,

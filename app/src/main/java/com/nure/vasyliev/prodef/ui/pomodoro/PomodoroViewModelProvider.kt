@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.nure.vasyliev.prodef.service.PomodoroSharedPrefs
 
+@Suppress("UNCHECKED_CAST")
 class PomodoroViewModelFactory(
     private val pomodoroSharedPrefs: PomodoroSharedPrefs
 ) : ViewModelProvider.Factory {

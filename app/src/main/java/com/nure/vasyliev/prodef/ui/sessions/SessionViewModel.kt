@@ -21,6 +21,10 @@ class SessionViewModel(
     val isLoading: LiveData<Boolean> = _isLoading
 
     init {
+        getAllPomodoros()
+    }
+
+    fun getAllPomodoros() {
         viewModelScope.launch {
             try {
                 _isLoading.value = true

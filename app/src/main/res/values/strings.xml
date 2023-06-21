@@ -17,8 +17,18 @@
     <string name="username">Username</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
+    <string name="task_name">Task name</string>
+    <string name="duration">Duration</string>
+    <string name="minutes">minutes</string>
+    <string name="create_session">Create session</string>
+    <string name="planned">Planned</string>
+    <string name="finished_earlier">Finished ahead of time</string>
+    <string name="completed">Completed</string>
+
     <string name="sign_in_error">Wrong email or password</string>
     <string name="sign_up_error">Wrong one of the fields</string>
+    <string name="task_name_error">Task name is empty</string>
+    <string name="duration_error">Duration must be at least 5 minutes</string>
 
     <string name="rv_item_duration">Duration: %s minutes</string>
     <string name="rv_item_period">Period: %s - %s</string>

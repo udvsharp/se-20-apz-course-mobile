@@ -57,13 +57,23 @@
         android:id="@+id/pomodoroFragment"
         android:name="com.nure.vasyliev.prodef.ui.pomodoro.PomodoroFragment"
         android:label="@string/title_pomodoro"
-        tools:layout="@layout/fragment_pomodoro" />
+        tools:layout="@layout/fragment_pomodoro"/>
 
     <fragment
         android:id="@+id/sessionsFragment"
         android:name="com.nure.vasyliev.prodef.ui.sessions.SessionsFragment"
         android:label="@string/title_sessions"
-        tools:layout="@layout/fragment_sessions" />
+        tools:layout="@layout/fragment_sessions">
+        <action
+            android:id="@+id/toCreatePomodoroDialog"
+            app:destination="@id/createPomodoroDialog"/>
+    </fragment>
+
+    <dialog
+        android:id="@+id/createPomodoroDialog"
+        android:name="com.nure.vasyliev.prodef.ui.createPomodoro.CreateSessionDialog"
+        android:label="@string/title_pomodoro"
+        tools:layout="@layout/fragment_create_session" />
 
     <fragment
         android:id="@+id/profileFragment"

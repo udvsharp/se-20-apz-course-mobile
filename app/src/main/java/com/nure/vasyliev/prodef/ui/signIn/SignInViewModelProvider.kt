@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.nure.vasyliev.prodef.rest.repositories.AuthRepository
 import com.nure.vasyliev.prodef.rest.repositories.SharedPrefsRepository
 
+@Suppress("UNCHECKED_CAST")
 class SignInViewModelFactory(
     private val sharedPrefsRepository: SharedPrefsRepository,
     private val authRepository: AuthRepository

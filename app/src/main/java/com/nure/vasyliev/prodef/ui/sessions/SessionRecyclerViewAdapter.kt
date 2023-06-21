@@ -2,7 +2,10 @@ package com.nure.vasyliev.prodef.ui.sessions
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.annotation.ColorRes
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.nure.vasyliev.prodef.R
@@ -18,7 +21,7 @@ class SessionRecyclerViewAdapter(
     fun updateList(newList: List<Pomodoro>) {
         list.clear()
         list.addAll(newList)
-        notifyDataSetChanged()
+        notifyItemRangeChanged(0, list.size - 1)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -51,12 +54,8 @@ class SessionRecyclerViewAdapter(
                 context.getString(R.string.rv_item_duration, pomodoro.durationMins.toString())
 
             if (pomodoro.isValid) {
-                binding.layoutTaskName.setBackgroundColor(
-                    context.resources.getColor(
-                        R.color.main_color,
-                        context.theme
-                    )
-                )
+                binding.layoutTaskName.setBackground(R.color.main_color)
+                binding.tvPlanning.text = context.getString(R.string.planned)
             } else {
                 val startDate = formatFromServer.parse(pomodoro.startTime) ?: ""
                 val stopDate = formatFromServer.parse(pomodoro.stopTime) ?: ""
@@ -68,21 +67,23 @@ class SessionRecyclerViewAdapter(
                     context.getString(R.string.rv_item_period, startTime, stopTime)
 
                 if (pomodoro.finishedEarlier) {
-                    binding.layoutTaskName.setBackgroundColor(
-                        context.resources.getColor(
-                            R.color.not_passed_session,
-                            context.theme
-                        )
-                    )
+                    binding.layoutTaskName.setBackground(R.color.not_passed_session)
+                    binding.tvPlanning.text = context.getString(R.string.finished_earlier)
+                    binding.tvPlanning.setColor(R.color.not_passed_session)
                 } else {
-                    binding.layoutTaskName.setBackgroundColor(
-                        context.resources.getColor(
-                            R.color.passed_session,
-                            context.theme
-                        )
-                    )
+                    binding.layoutTaskName.setBackground(R.color.passed_session)
+                    binding.tvPlanning.text = context.getString(R.string.completed)
+                    binding.tvPlanning.setColor(R.color.passed_session)
                 }
             }
+        }
+
+        private fun View.setBackground(@ColorRes color: Int) {
+            this.setBackgroundColor(context.resources.getColor(color, context.theme))
+        }
+
+        private fun TextView.setColor(@ColorRes color: Int) {
+            this.setTextColor(context.resources.getColor(color, context.theme))
         }
     }
 }
