@@ -13,6 +13,7 @@ import com.nure.vasyliev.prodef.R
 import com.nure.vasyliev.prodef.databinding.FragmentCreateSessionBinding
 import com.nure.vasyliev.prodef.rest.repositories.PomodoroRepository
 import com.nure.vasyliev.prodef.rest.repositories.SharedPrefsRepository
+import com.nure.vasyliev.prodef.utils.setNavResult
 
 class CreateSessionDialog : BottomSheetDialogFragment() {
 
@@ -33,7 +34,10 @@ class CreateSessionDialog : BottomSheetDialogFragment() {
             pomodoroRepository
         )
 
-        createSessionViewModel = ViewModelProvider(this, createSessionViewModelFactory)[CreateSessionViewModel::class.java]
+        createSessionViewModel = ViewModelProvider(
+            this,
+            createSessionViewModelFactory
+        )[CreateSessionViewModel::class.java]
 
         binding = FragmentCreateSessionBinding.inflate(inflater, container, false)
         return binding.root
@@ -62,6 +66,7 @@ class CreateSessionDialog : BottomSheetDialogFragment() {
     private fun setupObservers() {
         createSessionViewModel.isSuccess.observe(viewLifecycleOwner) {
             if (it) {
+                setNavResult(R.id.sessionsFragment, RESULT, it)
                 findNavController().navigateUp()
             }
         }
@@ -74,5 +79,9 @@ class CreateSessionDialog : BottomSheetDialogFragment() {
         createSessionViewModel.durationError.observe(viewLifecycleOwner) {
             binding.etDurationContainer.error = requireContext().getString(R.string.duration_error)
         }
+    }
+
+    companion object {
+        const val RESULT = "is_session_created"
     }
 }

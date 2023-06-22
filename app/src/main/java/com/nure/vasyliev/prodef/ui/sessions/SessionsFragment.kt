@@ -6,12 +6,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.nure.vasyliev.prodef.MainActivity
+import com.nure.vasyliev.prodef.R
 import com.nure.vasyliev.prodef.databinding.FragmentSessionsBinding
 import com.nure.vasyliev.prodef.rest.repositories.PomodoroRepository
 import com.nure.vasyliev.prodef.rest.repositories.SharedPrefsRepository
+import com.nure.vasyliev.prodef.ui.createPomodoro.CreateSessionDialog
 import com.nure.vasyliev.prodef.utils.formatFromServer
+import com.nure.vasyliev.prodef.utils.getNavResult
+import com.nure.vasyliev.prodef.utils.log
+import com.nure.vasyliev.prodef.utils.setNavResult
 
 class SessionsFragment : Fragment() {
 
@@ -20,6 +26,16 @@ class SessionsFragment : Fragment() {
     private lateinit var sessionViewModel: SessionViewModel
 
     private lateinit var sessionAdapter: SessionRecyclerViewAdapter
+
+    private val destinationChangedListener =
+        NavController.OnDestinationChangedListener { _, _, _ ->
+            val success = getNavResult<Boolean>(R.id.sessionsFragment, CreateSessionDialog.RESULT)
+            log(success.toString())
+            if (success == true) {
+                sessionViewModel.getAllPomodoros()
+                setNavResult(R.id.sessionsFragment, CreateSessionDialog.RESULT, null)
+            }
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,7 +50,8 @@ class SessionsFragment : Fragment() {
             pomodoroRepository
         )
 
-        sessionViewModel = ViewModelProvider(this, sessionViewModelFactory)[SessionViewModel::class.java]
+        sessionViewModel =
+            ViewModelProvider(this, sessionViewModelFactory)[SessionViewModel::class.java]
 
         sessionAdapter = SessionRecyclerViewAdapter()
 
@@ -52,6 +69,7 @@ class SessionsFragment : Fragment() {
         binding.fabCreatePomodoro.setOnClickListener {
             val toCreatePomodoroDialog = SessionsFragmentDirections.toCreatePomodoroDialog()
             findNavController().navigate(toCreatePomodoroDialog)
+            onPause()
         }
 
         binding.layoutRefresh.setOnRefreshListener {
@@ -59,6 +77,16 @@ class SessionsFragment : Fragment() {
         }
 
         setupObservers()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        findNavController().addOnDestinationChangedListener(destinationChangedListener)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        findNavController().removeOnDestinationChangedListener(destinationChangedListener)
     }
 
     private fun setupObservers() {

@@ -21,7 +21,7 @@ class SessionRecyclerViewAdapter(
     fun updateList(newList: List<Pomodoro>) {
         list.clear()
         list.addAll(newList)
-        notifyItemRangeChanged(0, list.size - 1)
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
