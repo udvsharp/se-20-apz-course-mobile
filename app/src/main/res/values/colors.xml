@@ -7,6 +7,7 @@
 
     <color name="passed_session">#218007</color>
     <color name="not_passed_session">#AC3434</color>
+    <color name="icon_gray">#616060</color>
 
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>

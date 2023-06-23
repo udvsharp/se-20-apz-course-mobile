@@ -63,6 +63,6 @@ class CreateSessionViewModel(
         if (durationMins < 5) {
             _durationError.value = "Task name is empty"
         }
-        return true//durationMins >= 5
+        return durationMins in 5..480
     }
 }

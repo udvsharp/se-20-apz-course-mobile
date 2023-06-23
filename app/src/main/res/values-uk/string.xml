@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_sign_in">Увійти</string>
+    <string name="title_sign_up">Зареєструватися</string>
+    <string name="title_pomodoro">Таймер</string>
+    <string name="title_sessions">Сесії</string>
+    <string name="title_profile">Профіль</string>
+    <string name="title_update_profile">Редагувати профіль</string>
+    <string name="title_update_password">Редагувати пароль</string>
+
+    <string name="welcome">Ласкаво просимо</string>
+    <string name="sign_in_account">Увійти до акаунту:</string>
+    <string name="enter_to_sign_up">Введіть усі поля для реєстрації:</string>
+    <string name="no_account">Немає акаунту?</string>
+    <string name="sign_in">Увійти</string>
+    <string name="sign_up">Зареєструватися</string>
+    <string name="name">Ваше ім\'я</string>
+    <string name="username">Ім\'я користувача</string>
+    <string name="email">Пошта</string>
+    <string name="password">Пароль</string>
+    <string name="name_desc">Ваше ім\'я:</string>
+    <string name="username_desc">Ім\'я користувача:</string>
+    <string name="email_desc">Пошта:</string>
+    <string name="password_desc">Пароль:</string>
+    <string name="task_name">Назва задачі</string>
+    <string name="duration">Тривалість</string>
+    <string name="minutes">хвилин</string>
+    <string name="create_session">Створити сесію</string>
+    <string name="update_profile">Редагувати дані профілю</string>
+    <string name="update_password">Редагувати пароль</string>
+    <string name="planned">Запланована</string>
+    <string name="finished_earlier">Закінчена раніше</string>
+    <string name="completed">Завершена</string>
+
+    <string name="sign_in_error">Неправильні пошта або пароль</string>
+    <string name="sign_up_error">Неправильно введено одне з полів</string>
+    <string name="task_name_error">Task name is empty</string>
+    <string name="duration_error">Тривалість має бути 5 – 480 хвилин</string>
+    <string name="name_error">Ім\'я пусте</string>
+    <string name="username_error">Ім\'я користувача пусте</string>
+    <string name="email_error">Поштв невірна</string>
+    <string name="password_error">Пароль має бути щонайменше 6 символів</string>
+    <string name="something_went_wrong">Щось піщло не так</string>
+
+    <string name="rv_item_duration">Тривалість: %s хвилин</string>
+    <string name="rv_item_period">Період: %s – %s</string>
+</resources>

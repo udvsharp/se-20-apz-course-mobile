@@ -48,13 +48,13 @@ class PomodoroRepository {
         }
     }
 
-    suspend fun startPomodoro(userId: String) {
+    suspend fun startPomodoro(pomodoroId: String) {
         val apiService = ApiClient.create().create(PomodoroApi::class.java)
-        apiService.startPomodoro(userId)
+        apiService.startPomodoro(pomodoroId)
     }
 
-    suspend fun stopPomodoro(userId: String) {
+    suspend fun stopPomodoro(pomodoroId: String) {
         val apiService = ApiClient.create().create(PomodoroApi::class.java)
-        apiService.stopPomodoro(userId)
+        apiService.stopPomodoro(pomodoroId)
     }
 }

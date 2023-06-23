@@ -23,7 +23,6 @@ import com.nure.vasyliev.prodef.service.PomodoroSharedPrefs
 import com.nure.vasyliev.prodef.utils.MILLIS_IN_MINUTE
 import com.nure.vasyliev.prodef.utils.MILLIS_IN_SECOND
 import com.nure.vasyliev.prodef.utils.SECONDS_IN_MINUTE
-import com.nure.vasyliev.prodef.utils.log
 import com.nure.vasyliev.prodef.utils.toMmSsFormat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -66,6 +65,7 @@ class PomodoroFragment : Fragment() {
 
         val actionBar = (requireActivity() as MainActivity).supportActionBar
         actionBar?.setDisplayHomeAsUpEnabled(false)
+        actionBar?.setTitle(R.string.title_pomodoro)
 
         binding = FragmentPomodoroBinding.inflate(inflater, container, false)
         appContext = requireContext().applicationContext
@@ -88,7 +88,6 @@ class PomodoroFragment : Fragment() {
             binding.cpiTimerProgress.progress = (millis / MILLIS_IN_SECOND).toInt()
         }
         pomodoroViewModel.isStarted.observe(viewLifecycleOwner) { isStarted ->
-            log("$isStarted")
             if (isStarted) {
                 isBounded = appContext.bindService(
                     Intent(appContext, PomodoroService::class.java),
@@ -112,7 +111,6 @@ class PomodoroFragment : Fragment() {
             }
         }
         pomodoroViewModel.validPomodoro.observe(viewLifecycleOwner) { pomodoro ->
-            log("$pomodoro")
             if (pomodoro != null) {
                 binding.layoutTask.layoutPomodoro.isVisible = true
                 binding.layoutTask.tvTaskName.text = pomodoro.task

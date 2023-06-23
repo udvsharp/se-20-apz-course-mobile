@@ -1,11 +1,13 @@
 <resources>
-    <string name="app_name">ProdEf</string>
+    <string name="app_name" translatable="false">ProdEf</string>
 
     <string name="title_sign_in">Sign in</string>
     <string name="title_sign_up">Sign up</string>
     <string name="title_pomodoro">Pomodoro</string>
     <string name="title_sessions">Sessions</string>
     <string name="title_profile">Profile</string>
+    <string name="title_update_profile">Update profile</string>
+    <string name="title_update_password">Update password</string>
 
     <string name="welcome">Welcome</string>
     <string name="sign_in_account">Sign in your account:</string>
@@ -17,10 +19,16 @@
     <string name="username">Username</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
+    <string name="name_desc">Name:</string>
+    <string name="username_desc">Username:</string>
+    <string name="email_desc">Email:</string>
+    <string name="password_desc">Password:</string>
     <string name="task_name">Task name</string>
     <string name="duration">Duration</string>
     <string name="minutes">minutes</string>
     <string name="create_session">Create session</string>
+    <string name="update_profile">Update profile</string>
+    <string name="update_password">Update password</string>
     <string name="planned">Planned</string>
     <string name="finished_earlier">Finished ahead of time</string>
     <string name="completed">Completed</string>
@@ -28,7 +36,12 @@
     <string name="sign_in_error">Wrong email or password</string>
     <string name="sign_up_error">Wrong one of the fields</string>
     <string name="task_name_error">Task name is empty</string>
-    <string name="duration_error">Duration must be at least 5 minutes</string>
+    <string name="duration_error">Duration must be 5 – 480 minutes</string>
+    <string name="name_error">Name is empty</string>
+    <string name="username_error">Username is empty</string>
+    <string name="email_error">Email is incorrect</string>
+    <string name="password_error">Password must be at least 6 symbols</string>
+    <string name="something_went_wrong">Something went wrong</string>
 
     <string name="rv_item_duration">Duration: %s minutes</string>
     <string name="rv_item_period">Period: %s - %s</string>

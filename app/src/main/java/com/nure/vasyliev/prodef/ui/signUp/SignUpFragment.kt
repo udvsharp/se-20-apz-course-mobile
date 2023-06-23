@@ -9,6 +9,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.nure.vasyliev.prodef.MainActivity
 import com.nure.vasyliev.prodef.R
 import com.nure.vasyliev.prodef.databinding.FragmentSignUpBinding
 import com.nure.vasyliev.prodef.rest.repositories.AuthRepository
@@ -34,6 +35,10 @@ class SignUpFragment : Fragment() {
         )
 
         signUphViewModel = ViewModelProvider(this, signUpViewModelFactory)[SignUpViewModel::class.java]
+
+        val actionBar = (requireActivity() as MainActivity).supportActionBar
+        actionBar?.setDisplayHomeAsUpEnabled(true)
+        actionBar?.setTitle(R.string.title_sign_up)
 
         binding = FragmentSignUpBinding.inflate(inflater, container, false)
         return binding.root

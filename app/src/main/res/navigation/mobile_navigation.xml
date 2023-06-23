@@ -79,5 +79,25 @@
         android:id="@+id/profileFragment"
         android:name="com.nure.vasyliev.prodef.ui.profile.ProfileFragment"
         android:label="@string/title_profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile">
+        <action
+            android:id="@+id/toUpdateProfileFragment"
+            app:destination="@id/updateProfileFragment"/>
+        <action
+            android:id="@+id/toUpdatePasswordFragment"
+            app:destination="@id/updatePasswordFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/updateProfileFragment"
+        android:name="com.nure.vasyliev.prodef.ui.updateProfile.UpdateProfileFragment"
+        android:label="@string/update_profile"
+        tools:layout="@layout/fragment_update_profile" />
+
+    <fragment
+        android:id="@+id/updatePasswordFragment"
+        android:name="com.nure.vasyliev.prodef.ui.updatePassword.UpdatePasswordFragment"
+        android:label="@string/update_password"
+        tools:layout="@layout/fragment_update_password" />
+
 </navigation>

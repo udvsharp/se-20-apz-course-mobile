@@ -2,6 +2,10 @@ package com.nure.vasyliev.prodef.model.user
 
 import com.google.gson.annotations.SerializedName
 
+data class UserItem(
+    @SerializedName("user") val user: User
+)
+
 data class User(
     @SerializedName("name") val name: String,
     @SerializedName("username") val username: String,

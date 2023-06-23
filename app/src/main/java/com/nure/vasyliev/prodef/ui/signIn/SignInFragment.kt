@@ -38,6 +38,7 @@ class SignInFragment : Fragment() {
 
         val actionBar = (requireActivity() as MainActivity).supportActionBar
         actionBar?.setDisplayHomeAsUpEnabled(false)
+        actionBar?.setTitle(R.string.title_sign_in)
 
         binding = FragmentSignInBinding.inflate(inflater, container, false)
         return binding.root
