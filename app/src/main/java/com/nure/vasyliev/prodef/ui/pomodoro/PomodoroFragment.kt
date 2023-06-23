@@ -1,23 +1,34 @@
 package com.nure.vasyliev.prodef.ui.pomodoro
 
-import android.content.BroadcastReceiver
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.nure.vasyliev.prodef.MainActivity
 import com.nure.vasyliev.prodef.R
 import com.nure.vasyliev.prodef.databinding.FragmentPomodoroBinding
+import com.nure.vasyliev.prodef.rest.repositories.PomodoroRepository
+import com.nure.vasyliev.prodef.rest.repositories.SharedPrefsRepository
 import com.nure.vasyliev.prodef.service.PomodoroService
 import com.nure.vasyliev.prodef.service.PomodoroSharedPrefs
+import com.nure.vasyliev.prodef.utils.MILLIS_IN_MINUTE
 import com.nure.vasyliev.prodef.utils.MILLIS_IN_SECOND
+import com.nure.vasyliev.prodef.utils.SECONDS_IN_MINUTE
 import com.nure.vasyliev.prodef.utils.toMmSsFormat
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class PomodoroFragment : Fragment() {
 
@@ -27,29 +38,42 @@ class PomodoroFragment : Fragment() {
 
     private lateinit var appContext: Context
 
+    private var isBounded: Boolean = false
+
+    private val supervisor = SupervisorJob()
+    private val coroutineScope = CoroutineScope(Dispatchers.IO + supervisor)
+
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
+        val sharedPrefsRepository = SharedPrefsRepository(requireContext())
+        val pomodoroRepository = PomodoroRepository()
         val pomodoroSharedPrefs = PomodoroSharedPrefs(requireContext())
 
         val pomodoroViewModelFactory = PomodoroViewModelFactory(
+            sharedPrefsRepository,
+            pomodoroRepository,
             pomodoroSharedPrefs
         )
 
-        pomodoroViewModel = ViewModelProvider(this, pomodoroViewModelFactory)[PomodoroViewModel::class.java]
+        pomodoroViewModel =
+            ViewModelProvider(this, pomodoroViewModelFactory)[PomodoroViewModel::class.java]
 
         val actionBar = (requireActivity() as MainActivity).supportActionBar
         actionBar?.setDisplayHomeAsUpEnabled(false)
 
         binding = FragmentPomodoroBinding.inflate(inflater, container, false)
+        appContext = requireContext().applicationContext
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        appContext = requireContext().applicationContext
+
+        binding.layoutTask.layoutPeriod.isVisible = false
 
         setupObservers()
     }
@@ -61,57 +85,97 @@ class PomodoroFragment : Fragment() {
         }
         pomodoroViewModel.isStarted.observe(viewLifecycleOwner) { isStarted ->
             if (isStarted) {
+                isBounded = appContext.bindService(
+                    Intent(appContext, PomodoroService::class.java),
+                    pomodoroConnection,
+                    Context.BIND_AUTO_CREATE
+                )
                 binding.ivPlayController.setImageResource(R.drawable.ic_stop)
                 binding.ivPlayController.setOnClickListener {
                     val intent = Intent(PomodoroService.SEND_STOP)
                     appContext.sendBroadcast(intent)
+                    pomodoroViewModel.getLastValidPomodoro()
                 }
             } else {
                 binding.ivPlayController.setImageResource(R.drawable.ic_play)
                 binding.ivPlayController.setOnClickListener {
-                    val seconds = 10L
-                    val intent = PomodoroService.newIntent(requireContext(), seconds)
-                    ContextCompat.startForegroundService(appContext,intent)
-                    pomodoroViewModel.updateMaxSeconds(seconds)
-                    binding.cpiTimerProgress.max = seconds.toInt()
+                    startService()
                 }
             }
         }
+        pomodoroViewModel.validPomodoro.observe(viewLifecycleOwner) { pomodoro ->
+            if (pomodoro.task.isNotEmpty()) {
+                binding.layoutTask.layoutPomodoro.isVisible = true
+            } else {
+                return@observe
+            }
+
+            binding.layoutTask.tvTaskName.text = pomodoro.task
+            binding.layoutTask.tvDuration.text =
+                context?.getString(R.string.rv_item_duration, pomodoro.durationMins.toString())
+            binding.layoutTask.tvPlanning.text = context?.getString(R.string.planned)
+            binding.cpiTimerProgress.max = pomodoro.durationMins * SECONDS_IN_MINUTE.toInt()
+            if (pomodoroViewModel.isStarted.value != true) {
+                binding.tvTimer.text = (pomodoro.durationMins * MILLIS_IN_MINUTE).toMmSsFormat()
+                binding.cpiTimerProgress.progress =
+                    pomodoro.durationMins * SECONDS_IN_MINUTE.toInt()
+            }
+        }
+        pomodoroViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            binding.progressBar.isVisible = isLoading
+            binding.ivPlayController.isEnabled = !isLoading
+        }
     }
 
-    override fun onStart() {
-        super.onStart()
-        appContext.registerReceiver(millisTimerReceiver, IntentFilter(PomodoroService.SEND_MILLIS))
-        appContext.registerReceiver(startedTimerReceiver, IntentFilter(PomodoroService.SEND_STARTED))
-    }
-
-    override fun onResume() {
-        super.onResume()
-        val maxSeconds = pomodoroViewModel.maxSeconds.value?.toInt() ?: 0
-        binding.cpiTimerProgress.max = maxSeconds
+    private fun startService() {
+        val seconds = pomodoroViewModel.maxSeconds.value ?: 0L
+        val taskName = pomodoroViewModel.validPomodoro.value?.task ?: ""
+        val intent = PomodoroService.startIntent(requireContext(), seconds, taskName)
+        isBounded = appContext.bindService(
+            intent,
+            pomodoroConnection,
+            Context.BIND_AUTO_CREATE
+        )
+        ContextCompat.startForegroundService(appContext, intent)
     }
 
     override fun onStop() {
         super.onStop()
-        appContext.unregisterReceiver(millisTimerReceiver)
-        appContext.unregisterReceiver(startedTimerReceiver)
+        if (isBounded)
+            appContext.unbindService(pomodoroConnection)
     }
 
-    private val millisTimerReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            val millis = intent?.getLongExtra(PomodoroService.MILLIS, 0L)
-            millis?.let {
-                pomodoroViewModel.updateMillis(it)
+    private var pomodoroConnection: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(className: ComponentName, iBinder: IBinder) {
+            val binder = (iBinder as PomodoroService.PBinder)
+            coroutineScope.launch {
+                binder.isStarted.collect() {
+                    withContext(Dispatchers.Main) {
+                        pomodoroViewModel.updateStarted(it)
+                    }
+                }
+            }
+            coroutineScope.launch {
+                binder.millis.collect {
+                    withContext(Dispatchers.Main) {
+                        pomodoroViewModel.updateMillis(it)
+                    }
+                }
+            }
+            coroutineScope.launch {
+                binder.isForegroundStarted.collect {
+                    withContext(Dispatchers.Main) {
+                        if (!it && pomodoroViewModel.isStarted.value == true) {
+                            ContextCompat.startForegroundService(
+                                appContext,
+                                PomodoroService.bindIntent(appContext)
+                            )
+                        }
+                    }
+                }
             }
         }
-    }
 
-    private val startedTimerReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            val isStarted = intent?.getBooleanExtra(PomodoroService.IS_STARTED, false)
-            isStarted?.let {
-                pomodoroViewModel.updateStarted(it)
-            }
-        }
+        override fun onServiceDisconnected(className: ComponentName) {}
     }
 }

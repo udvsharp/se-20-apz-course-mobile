@@ -16,7 +16,6 @@ import com.nure.vasyliev.prodef.rest.repositories.SharedPrefsRepository
 import com.nure.vasyliev.prodef.ui.createPomodoro.CreateSessionDialog
 import com.nure.vasyliev.prodef.utils.formatFromServer
 import com.nure.vasyliev.prodef.utils.getNavResult
-import com.nure.vasyliev.prodef.utils.log
 import com.nure.vasyliev.prodef.utils.setNavResult
 
 class SessionsFragment : Fragment() {
@@ -30,7 +29,6 @@ class SessionsFragment : Fragment() {
     private val destinationChangedListener =
         NavController.OnDestinationChangedListener { _, _, _ ->
             val success = getNavResult<Boolean>(R.id.sessionsFragment, CreateSessionDialog.RESULT)
-            log(success.toString())
             if (success == true) {
                 sessionViewModel.getAllPomodoros()
                 setNavResult(R.id.sessionsFragment, CreateSessionDialog.RESULT, null)

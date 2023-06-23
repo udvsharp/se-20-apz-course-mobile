@@ -8,12 +8,20 @@ class PomodoroSharedPrefs(
 
     private val sharedPrefs = context.getSharedPreferences(POMODORO_SHARED_PREFS, Context.MODE_PRIVATE)
 
-    fun getMillis(): Long {
-        return sharedPrefs.getLong(MILLIS, 0L)
+    fun getStartMillis(): Long {
+        return sharedPrefs.getLong(START_MILLIS, 0L)
     }
 
-    fun putMillis(millis: Long) {
-        sharedPrefs.edit().putLong(MILLIS, millis).apply()
+    fun putStartMillis(millis: Long) {
+        sharedPrefs.edit().putLong(START_MILLIS, millis).apply()
+    }
+
+    fun getTaskName(): String {
+        return sharedPrefs.getString(TASK_NAME, "") ?: ""
+    }
+
+    fun putTaskName(taskName: String) {
+        sharedPrefs.edit().putString(TASK_NAME, taskName).apply()
     }
 
     fun getMaxMillis(): Long {
@@ -24,10 +32,19 @@ class PomodoroSharedPrefs(
         sharedPrefs.edit().putLong(MAX_MILLIS, millis).apply()
     }
 
+    fun getIsStarted(): Boolean {
+        return sharedPrefs.getBoolean(IS_STARTED, false)
+    }
+
+    fun putIsStarted(isStarted: Boolean) {
+        sharedPrefs.edit().putBoolean(IS_STARTED, isStarted).apply()
+    }
+
     companion object {
         private const val POMODORO_SHARED_PREFS = "pomodoro_shared_prefs"
-        private const val MILLIS = "millis"
+        private const val START_MILLIS = "start_millis"
+        private const val TASK_NAME = "task_name"
         private const val MAX_MILLIS = "max_millis"
-
+        private const val IS_STARTED = "is_started"
     }
 }

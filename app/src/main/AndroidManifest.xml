@@ -27,7 +27,11 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".service.PomodoroService"/>
+        <service
+            android:name=".service.PomodoroService"
+            android:foregroundServiceType="dataSync"
+            android:stopWithTask="false"
+            />
     </application>
 
 </manifest>

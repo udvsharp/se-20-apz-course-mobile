@@ -1,9 +1,12 @@
 package com.nure.vasyliev.prodef.rest.repositories
 
+import com.nure.vasyliev.prodef.model.pomodoro.FilteredPomodoros
+import com.nure.vasyliev.prodef.model.pomodoro.Pomodoro
 import com.nure.vasyliev.prodef.model.pomodoro.Pomodoros
 import com.nure.vasyliev.prodef.rest.ApiClient
 import com.nure.vasyliev.prodef.rest.apis.PomodoroApi
 import com.nure.vasyliev.prodef.rest.payloads.pomodoro.PomodoroPayload
+import com.nure.vasyliev.prodef.utils.formatFromServer
 
 class PomodoroRepository {
 
@@ -17,6 +20,20 @@ class PomodoroRepository {
             throw RuntimeException("Invalid token")
         } else {
             Pomodoros(listOf())
+        }
+    }
+
+    suspend fun getLastValidUserPomodoro(userId: String): Pomodoro {
+        val apiService = ApiClient.create().create(PomodoroApi::class.java)
+        val response = apiService.getAllValidUserPomodoro(userId)
+
+        return if (response.isSuccessful) {
+            val pomodoros = response.body() ?: FilteredPomodoros(listOf())
+            pomodoros.pomodoros.sortedBy {
+                formatFromServer.parse(it.createdAt)
+            }.first()
+        } else {
+            throw RuntimeException("Invalid token")
         }
     }
 
