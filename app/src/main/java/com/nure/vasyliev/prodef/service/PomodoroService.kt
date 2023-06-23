@@ -14,11 +14,13 @@ import android.os.CountDownTimer
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.nure.vasyliev.prodef.R
+import com.nure.vasyliev.prodef.rest.repositories.PomodoroRepository
 import com.nure.vasyliev.prodef.utils.MILLIS_IN_SECOND
 import com.nure.vasyliev.prodef.utils.toMmSsFormat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,6 +29,7 @@ import java.util.Date
 
 class PomodoroService : Service() {
 
+    private lateinit var pomodoroRepository: PomodoroRepository
     private lateinit var pomodoroSharedPrefs: PomodoroSharedPrefs
     private lateinit var notificationManager: NotificationManager
 
@@ -37,11 +40,12 @@ class PomodoroService : Service() {
     private val _millis = MutableStateFlow(0L)
 
     private val supervisor = SupervisorJob()
-    private val coroutineScope = CoroutineScope(Dispatchers.IO + supervisor)
+    private val coroutineScope = CoroutineScope(Dispatchers.Main + supervisor)
 
     override fun onCreate() {
         super.onCreate()
 
+        pomodoroRepository = PomodoroRepository()
         pomodoroSharedPrefs = PomodoroSharedPrefs(applicationContext)
         notificationManager = getSystemService(NotificationManager::class.java)
 
@@ -58,6 +62,7 @@ class PomodoroService : Service() {
         _isForegroundStarted.value = true
         val seconds = intent?.getLongExtra(SECONDS, 0L) ?: 0L
         val taskName = intent?.getStringExtra(TASK_NAME) ?: ""
+        val pomodoroId = intent?.getStringExtra(POMODORO_ID) ?: ""
         val millis = seconds * MILLIS_IN_SECOND
 
         val isStarted = pomodoroSharedPrefs.getIsStarted()
@@ -70,14 +75,16 @@ class PomodoroService : Service() {
         } else {
             pomodoroSharedPrefs.putIsStarted(true)
             pomodoroSharedPrefs.putTaskName(taskName)
+            pomodoroSharedPrefs.putPomodoroId(pomodoroId)
             pomodoroSharedPrefs.putMaxMillis(millis)
             pomodoroSharedPrefs.putStartMillis(Date().time)
+            coroutineScope.launch {
+                pomodoroRepository.startPomodoro(pomodoroId)
+            }
             setTimer(taskName, millis)
         }
 
-        coroutineScope.launch {
-            _isStarted.emit(true)
-        }
+        _isStarted.value = true
 
         countDownTimer?.start()
 
@@ -96,9 +103,7 @@ class PomodoroService : Service() {
             }
 
             override fun onFinish() {
-                refreshPrefsData()
-
-                stopPomodoro()
+                stopService()
             }
         }
     }
@@ -125,22 +130,23 @@ class PomodoroService : Service() {
     private fun refreshPrefsData() {
         pomodoroSharedPrefs.putIsStarted(false)
         pomodoroSharedPrefs.putTaskName("")
+        pomodoroSharedPrefs.putPomodoroId("")
         pomodoroSharedPrefs.putMaxMillis(0L)
         pomodoroSharedPrefs.putStartMillis(0L)
     }
 
-    private fun stopPomodoro() {
-        refreshPrefsData()
-
+    private fun stopService() {
         coroutineScope.launch {
-            _isStarted.emit(false)
+            val userId = pomodoroSharedPrefs.getPomodoroId()
+            pomodoroRepository.stopPomodoro(userId)
+            refreshPrefsData()
+            _isStarted.value = false
+            _isForegroundStarted.value = false
+            stopForeground(STOP_FOREGROUND_DETACH)
+            notificationManager.cancel(NOTIFICATION_ID)
+            supervisor.cancelChildren()
+            stopSelf()
         }
-        _isForegroundStarted.value = false
-
-        stopForeground(STOP_FOREGROUND_DETACH)
-        notificationManager.cancel(NOTIFICATION_ID)
-
-        stopSelf()
     }
 
     override fun onDestroy() {
@@ -148,15 +154,14 @@ class PomodoroService : Service() {
 
         stopForeground(STOP_FOREGROUND_DETACH)
         notificationManager.cancel(NOTIFICATION_ID)
-
+        supervisor.cancelChildren()
         unregisterReceiver(stopReceiver)
     }
 
     private val stopReceiver = object : BroadcastReceiver() {
         override fun onReceive(p0: Context?, intent: Intent?) {
             countDownTimer?.cancel()
-
-            stopPomodoro()
+            stopService()
         }
     }
 
@@ -177,13 +182,20 @@ class PomodoroService : Service() {
 
         private const val SECONDS = "seconds"
         private const val TASK_NAME = "task_name"
+        private const val POMODORO_ID = "pomodoro_id"
 
         const val SEND_STOP = "send_stop"
 
-        fun startIntent(context: Context, seconds: Long, taskName: String): Intent {
+        fun startIntent(
+            context: Context,
+            seconds: Long,
+            taskName: String,
+            pomodoroId: String
+        ): Intent {
             return Intent(context, PomodoroService::class.java).apply {
                 putExtra(SECONDS, seconds)
                 putExtra(TASK_NAME, taskName)
+                putExtra(POMODORO_ID, pomodoroId)
             }
         }
 

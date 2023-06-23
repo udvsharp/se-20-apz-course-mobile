@@ -27,4 +27,14 @@ interface PomodoroApi {
         @Path("userId") userId: String,
         @Body payload: PomodoroPayload
     ): Response<Pomodoro>
+
+    @POST("api/pomodoro/{userId}/start")
+    suspend fun startPomodoro(
+        @Path("userId") userId: String
+    ): Response<Pomodoro>
+
+    @POST("api/pomodoro/{userId}/stop")
+    suspend fun stopPomodoro(
+        @Path("userId") userId: String
+    ): Response<Pomodoro>
 }

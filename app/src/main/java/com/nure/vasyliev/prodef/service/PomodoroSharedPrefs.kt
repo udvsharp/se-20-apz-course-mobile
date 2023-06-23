@@ -40,11 +40,20 @@ class PomodoroSharedPrefs(
         sharedPrefs.edit().putBoolean(IS_STARTED, isStarted).apply()
     }
 
+    fun getPomodoroId(): String {
+        return sharedPrefs.getString(POMODORO_ID, "") ?: ""
+    }
+
+    fun putPomodoroId(pomodoroId: String) {
+        sharedPrefs.edit().putString(POMODORO_ID, pomodoroId).apply()
+    }
+
     companion object {
         private const val POMODORO_SHARED_PREFS = "pomodoro_shared_prefs"
         private const val START_MILLIS = "start_millis"
         private const val TASK_NAME = "task_name"
         private const val MAX_MILLIS = "max_millis"
         private const val IS_STARTED = "is_started"
+        private const val POMODORO_ID = "pomodoro_id"
     }
 }

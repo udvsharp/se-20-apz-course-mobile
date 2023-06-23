@@ -17,8 +17,8 @@ class PomodoroViewModel(
     private val pomodoroSharedPrefs: PomodoroSharedPrefs
 ) : ViewModel() {
 
-    private var _validPomodoro = MutableLiveData<Pomodoro>()
-    var validPomodoro: LiveData<Pomodoro> = _validPomodoro
+    private var _validPomodoro = MutableLiveData<Pomodoro?>()
+    var validPomodoro: LiveData<Pomodoro?> = _validPomodoro
 
     private var _millis = MutableLiveData<Long>()
     var millis: LiveData<Long> = _millis
@@ -44,7 +44,7 @@ class PomodoroViewModel(
                 val userId = sharedPrefsRepository.getUserId()
                 val pomodoro = pomodoroRepository.getLastValidUserPomodoro(userId ?: "")
                 _validPomodoro.value = pomodoro
-                _maxSeconds.value = pomodoro.durationMins * SECONDS_IN_MINUTE
+                _maxSeconds.value = (pomodoro?.durationMins ?: 0) * SECONDS_IN_MINUTE
                 _isLoading.value = false
             } catch (e: Exception) {
                 _isLoading.value = false

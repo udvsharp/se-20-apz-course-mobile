@@ -23,17 +23,18 @@ class PomodoroRepository {
         }
     }
 
-    suspend fun getLastValidUserPomodoro(userId: String): Pomodoro {
+    suspend fun getLastValidUserPomodoro(userId: String): Pomodoro? {
         val apiService = ApiClient.create().create(PomodoroApi::class.java)
         val response = apiService.getAllValidUserPomodoro(userId)
 
-        return if (response.isSuccessful) {
-            val pomodoros = response.body() ?: FilteredPomodoros(listOf())
+
+        val pomodoros = response.body() ?: FilteredPomodoros(listOf())
+        return if (pomodoros.pomodoros.isEmpty()) {
+            null
+        } else {
             pomodoros.pomodoros.sortedBy {
                 formatFromServer.parse(it.createdAt)
             }.first()
-        } else {
-            throw RuntimeException("Invalid token")
         }
     }
 
@@ -45,5 +46,15 @@ class PomodoroRepository {
         if (!response.isSuccessful) {
             throw RuntimeException("Invalid token")
         }
+    }
+
+    suspend fun startPomodoro(userId: String) {
+        val apiService = ApiClient.create().create(PomodoroApi::class.java)
+        apiService.startPomodoro(userId)
+    }
+
+    suspend fun stopPomodoro(userId: String) {
+        val apiService = ApiClient.create().create(PomodoroApi::class.java)
+        apiService.stopPomodoro(userId)
     }
 }
