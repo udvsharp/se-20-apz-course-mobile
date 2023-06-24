@@ -3,6 +3,9 @@
     <string name="title_sign_in">Увійти</string>
     <string name="title_sign_up">Зареєструватися</string>
     <string name="title_pomodoro">Таймер</string>
+    <string name="title_from_template">З шаблону</string>
+    <string name="title_create_template">Створити шаблон</string>
+    <string name="title_update_template">Редагувати шаблон</string>
     <string name="title_sessions">Сесії</string>
     <string name="title_profile">Профіль</string>
     <string name="title_update_profile">Редагувати профіль</string>
@@ -23,14 +26,25 @@
     <string name="email_desc">Пошта:</string>
     <string name="password_desc">Пароль:</string>
     <string name="task_name">Назва задачі</string>
+    <string name="template_name">Назва шаблону</string>
     <string name="duration">Тривалість</string>
     <string name="minutes">хвилин</string>
+    <string name="time_minutes">%s хвилин</string>
     <string name="create_session">Створити сесію</string>
+    <string name="from_template">З шаблону</string>
+    <string name="create_template">Створити новий шаблон</string>
+    <string name="update_template">Редагувати шаблон</string>
     <string name="update_profile">Редагувати дані профілю</string>
     <string name="update_password">Редагувати пароль</string>
     <string name="planned">Запланована</string>
     <string name="finished_earlier">Закінчена раніше</string>
     <string name="completed">Завершена</string>
+    <string name="yes">Так</string>
+    <string name="no">Ні</string>
+    <string name="delete_session">Видалити сесію</string>
+    <string name="delete_session_confirmation">Ви дійсно бажаєте видалити цю сесію?</string>
+    <string name="delete_template">Виділити шаблон</string>
+    <string name="delete_template_confirmation">Ви дійсно бажаєте видалити цей шаблон?</string>
 
     <string name="sign_in_error">Неправильні пошта або пароль</string>
     <string name="sign_up_error">Неправильно введено одне з полів</string>

@@ -1,4 +1,4 @@
-package com.nure.vasyliev.prodef.ui.sessions
+package com.nure.vasyliev.prodef.ui.fromTemplate
 
 import android.graphics.Canvas
 import android.graphics.drawable.ColorDrawable
@@ -8,38 +8,46 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.nure.vasyliev.prodef.MainActivity
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.nure.vasyliev.prodef.R
-import com.nure.vasyliev.prodef.databinding.FragmentSessionsBinding
+import com.nure.vasyliev.prodef.databinding.FragmentFromTemplateBinding
+import com.nure.vasyliev.prodef.model.template.Template
 import com.nure.vasyliev.prodef.rest.repositories.PomodoroRepository
 import com.nure.vasyliev.prodef.rest.repositories.SharedPrefsRepository
+import com.nure.vasyliev.prodef.rest.repositories.TemplateRepository
 import com.nure.vasyliev.prodef.ui.createPomodoro.CreateSessionDialog
-import com.nure.vasyliev.prodef.utils.formatFromServer
+import com.nure.vasyliev.prodef.ui.createTemplate.CreateTemplateDialog
 import com.nure.vasyliev.prodef.utils.getNavResult
 import com.nure.vasyliev.prodef.utils.setNavResult
 
-class SessionsFragment : Fragment() {
+class FromTemplateFragment : BottomSheetDialogFragment() {
 
-    private lateinit var binding: FragmentSessionsBinding
+    private lateinit var binding: FragmentFromTemplateBinding
 
-    private lateinit var sessionViewModel: SessionViewModel
+    private lateinit var fromTemplateViewModel: FromTemplateViewModel
 
-    private val sessionAdapter by lazy {
-        SessionRecyclerViewAdapter()
+    private val templateAdapter by lazy {
+        FromTemplateAdapter(
+            ::onItemClickListener,
+            ::onItemEditClickListener
+        )
     }
 
     private val destinationChangedListener =
         NavController.OnDestinationChangedListener { _, _, _ ->
-            val success = getNavResult<Boolean>(R.id.sessionsFragment, CreateSessionDialog.RESULT)
-            if (success == true) {
-                sessionViewModel.getAllPomodoros()
-                setNavResult(R.id.sessionsFragment, CreateSessionDialog.RESULT, null)
+            try {
+                val success = getNavResult<Boolean>(R.id.fromTemplateDialog, CreateTemplateDialog.RESULT)
+                if (success == true) {
+                    fromTemplateViewModel.getAllTemplates()
+                    setNavResult(R.id.fromTemplateDialog, CreateTemplateDialog.RESULT, null)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
 
@@ -50,35 +58,29 @@ class SessionsFragment : Fragment() {
     ): View {
         val sharedPrefsRepository = SharedPrefsRepository(requireContext())
         val pomodoroRepository = PomodoroRepository()
+        val templateRepository = TemplateRepository()
 
-        val sessionViewModelFactory = SessionViewModelFactory(
+        val fromTemplateViewModelProvider = FromTemplateViewModelProvider(
             sharedPrefsRepository,
+            templateRepository,
             pomodoroRepository
         )
 
-        sessionViewModel =
-            ViewModelProvider(this, sessionViewModelFactory)[SessionViewModel::class.java]
+        fromTemplateViewModel =
+            ViewModelProvider(this, fromTemplateViewModelProvider)[FromTemplateViewModel::class.java]
 
-        val actionBar = (requireActivity() as MainActivity).supportActionBar
-        actionBar?.setDisplayHomeAsUpEnabled(false)
-        actionBar?.setTitle(R.string.title_sessions)
-
-        binding = FragmentSessionsBinding.inflate(inflater, container, false)
+        binding = FragmentFromTemplateBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.rvSessions.adapter = sessionAdapter
+        binding.rvTemplates.adapter = templateAdapter
 
-        binding.fabCreatePomodoro.setOnClickListener {
-            val toCreatePomodoroDialog = SessionsFragmentDirections.toCreatePomodoroDialog()
-            findNavController().navigate(toCreatePomodoroDialog)
+        binding.btnCreateTemplate.setOnClickListener {
+            val toCreateTemplateDialog = FromTemplateFragmentDirections.toCreateTemplateDialog()
+            findNavController().navigate(toCreateTemplateDialog)
             onPause()
-        }
-
-        binding.layoutRefresh.setOnRefreshListener {
-            sessionViewModel.getAllPomodoros()
         }
 
         setupSwipe()
@@ -121,7 +123,7 @@ class SessionsFragment : Fragment() {
                 )
                 val icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_delete)!!
 
-                val iconMargin = 60
+                val iconMargin = 40
                 val iconTop = itemView.top + (itemView.height - icon.intrinsicHeight) / 2
                 val iconBottom = iconTop + icon.intrinsicHeight
                 val iconLeft = itemView.right - iconMargin - icon.intrinsicWidth
@@ -156,24 +158,36 @@ class SessionsFragment : Fragment() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.absoluteAdapterPosition
                 AlertDialog.Builder(requireContext())
-                    .setTitle(requireContext().getString(R.string.delete_session))
-                    .setMessage(requireContext().getString(R.string.delete_session_confirmation))
+                    .setTitle(requireContext().getString(R.string.delete_template))
+                    .setMessage(requireContext().getString(R.string.delete_template_confirmation))
                     .setPositiveButton(requireContext().getString(R.string.yes)) { _, _ ->
-                        val pomodoro = sessionAdapter.currentList[position]
-                        sessionViewModel.deletePomodoro(pomodoro.id)
-                        sessionAdapter.removeItem(position)
+                        val template = templateAdapter.currentList[position]
+                        fromTemplateViewModel.deleteTemplate(template.id)
+                        templateAdapter.removeItem(position)
                     }
                     .setNegativeButton(requireContext().getString(R.string.no)) { _, _ ->
-                        sessionAdapter.notifyItemChanged(position)
+                        templateAdapter.notifyItemChanged(position)
                     }
                     .setOnCancelListener {
-                        sessionAdapter.notifyItemChanged(position)
+                        templateAdapter.notifyItemChanged(position)
                     }.create().show()
             }
         }
 
         val itemTouchHelper = ItemTouchHelper(itemTouchCallback)
-        itemTouchHelper.attachToRecyclerView(binding.rvSessions)
+        itemTouchHelper.attachToRecyclerView(binding.rvTemplates)
+    }
+
+    private fun onItemClickListener(template: Template) {
+        fromTemplateViewModel.createPomodoroFromTemplate(template.id)
+        setNavResult(R.id.sessionsFragment, CreateSessionDialog.RESULT, true)
+        findNavController().popBackStack(R.id.sessionsFragment, false)
+    }
+
+    private fun onItemEditClickListener(template: Template) {
+        val templateId  = template.id
+        val toUpdateTemplateDialog = FromTemplateFragmentDirections.toUpdateTemplateDialog(templateId)
+        findNavController().navigate(toUpdateTemplateDialog)
     }
 
     override fun onStart() {
@@ -187,19 +201,8 @@ class SessionsFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        sessionViewModel.pomodoros.observe(viewLifecycleOwner) { pomodoros ->
-            val sortedPomodoros = pomodoros.sortedBy { pomodoro ->
-                val date = formatFromServer.parse(pomodoro.createdAt)
-                date
-            }.reversed()
-            sessionAdapter.submitList(sortedPomodoros) {
-                if (pomodoros.isNotEmpty()) {
-                    binding.rvSessions.scrollToPosition(0)
-                }
-            }
-        }
-        sessionViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.layoutRefresh.isRefreshing = isLoading
+        fromTemplateViewModel.templates.observe(viewLifecycleOwner) { templates ->
+            templateAdapter.submitList(templates)
         }
     }
 }

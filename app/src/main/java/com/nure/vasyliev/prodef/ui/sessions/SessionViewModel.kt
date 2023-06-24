@@ -20,6 +20,8 @@ class SessionViewModel(
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
+
+
     init {
         getAllPomodoros()
     }
@@ -30,6 +32,19 @@ class SessionViewModel(
                 _isLoading.value = true
                 val userId = sharedPrefsRepository.getUserId()
                 _pomodoros.value = pomodoroRepository.getAllUserPomodoro(userId ?: "").pomodoros
+                _isLoading.value = false
+            } catch (e: Exception) {
+                _isLoading.value = false
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun deletePomodoro(pomodoroId: String) {
+        viewModelScope.launch {
+            try {
+                _isLoading.value = true
+                pomodoroRepository.deletePomodoro(pomodoroId)
                 _isLoading.value = false
             } catch (e: Exception) {
                 _isLoading.value = false

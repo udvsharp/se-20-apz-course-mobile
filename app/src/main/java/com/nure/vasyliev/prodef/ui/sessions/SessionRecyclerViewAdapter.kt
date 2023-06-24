@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.nure.vasyliev.prodef.R
 import com.nure.vasyliev.prodef.databinding.RvItemSessionBinding
@@ -14,14 +16,12 @@ import com.nure.vasyliev.prodef.model.pomodoro.Pomodoro
 import com.nure.vasyliev.prodef.utils.ddMMyyyyHHmmFormatDate
 import com.nure.vasyliev.prodef.utils.formatFromServer
 
-class SessionRecyclerViewAdapter(
-    private val list: MutableList<Pomodoro> = mutableListOf()
-) : RecyclerView.Adapter<SessionRecyclerViewAdapter.ViewHolder>() {
+class SessionRecyclerViewAdapter : ListAdapter<Pomodoro, SessionRecyclerViewAdapter.ViewHolder>(PomodoroDiffUtils()) {
 
-    fun updateList(newList: List<Pomodoro>) {
-        list.clear()
-        list.addAll(newList)
-        notifyDataSetChanged()
+    fun removeItem(position: Int) {
+        val list = currentList.toMutableList()
+        list.removeAt(position)
+        submitList(list)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -35,10 +35,8 @@ class SessionRecyclerViewAdapter(
         )
     }
 
-    override fun getItemCount(): Int = list.size
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val pomodoro = list[position]
+        val pomodoro = currentList[position]
         holder.bind(pomodoro)
     }
 
@@ -56,6 +54,7 @@ class SessionRecyclerViewAdapter(
             if (pomodoro.isValid) {
                 binding.layoutTaskName.setBackground(R.color.main_color)
                 binding.tvPlanning.text = context.getString(R.string.planned)
+                binding.tvPlanning.setColor(R.color.main_text_color)
             } else {
                 val startDate = formatFromServer.parse(pomodoro.startTime) ?: ""
                 val stopDate = formatFromServer.parse(pomodoro.stopTime) ?: ""
@@ -85,5 +84,16 @@ class SessionRecyclerViewAdapter(
         private fun TextView.setColor(@ColorRes color: Int) {
             this.setTextColor(context.resources.getColor(color, context.theme))
         }
+    }
+}
+
+class PomodoroDiffUtils : DiffUtil.ItemCallback<Pomodoro>() {
+
+    override fun areItemsTheSame(oldItem: Pomodoro, newItem: Pomodoro): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(oldItem: Pomodoro, newItem: Pomodoro): Boolean {
+        return oldItem == newItem
     }
 }

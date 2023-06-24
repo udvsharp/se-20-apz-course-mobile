@@ -73,7 +73,44 @@
         android:id="@+id/createPomodoroDialog"
         android:name="com.nure.vasyliev.prodef.ui.createPomodoro.CreateSessionDialog"
         android:label="@string/title_pomodoro"
-        tools:layout="@layout/fragment_create_session" />
+        tools:layout="@layout/fragment_create_session">
+        <action
+            android:id="@+id/toFromTemplateDialog"
+            app:destination="@id/fromTemplateDialog"/>
+    </dialog>
+
+    <dialog
+        android:id="@+id/fromTemplateDialog"
+        android:name="com.nure.vasyliev.prodef.ui.fromTemplate.FromTemplateFragment"
+        android:label="@string/title_from_template"
+        tools:layout="@layout/fragment_from_template">
+        <action
+            android:id="@+id/toCreateTemplateDialog"
+            app:destination="@id/createTemplateDialog"/>
+        <action
+            android:id="@+id/toUpdateTemplateDialog"
+            app:destination="@id/updateTemplateDialog">
+            <argument
+                android:name="templateId"
+                app:argType="string"/>
+        </action>
+    </dialog>
+
+    <dialog
+        android:id="@+id/createTemplateDialog"
+        android:name="com.nure.vasyliev.prodef.ui.createTemplate.CreateTemplateDialog"
+        android:label="@string/create_template"
+        tools:layout="@layout/fragment_create_template" />
+
+    <dialog
+        android:id="@+id/updateTemplateDialog"
+        android:name="com.nure.vasyliev.prodef.ui.updateTemplate.UpdateTemplateDialog"
+        android:label="@string/update_template"
+        tools:layout="@layout/fragment_update_template">
+        <argument
+            android:name="templateId"
+            app:argType="string"/>
+    </dialog>
 
     <fragment
         android:id="@+id/profileFragment"

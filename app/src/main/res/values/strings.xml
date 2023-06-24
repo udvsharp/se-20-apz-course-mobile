@@ -4,6 +4,9 @@
     <string name="title_sign_in">Sign in</string>
     <string name="title_sign_up">Sign up</string>
     <string name="title_pomodoro">Pomodoro</string>
+    <string name="title_from_template">From template</string>
+    <string name="title_create_template">Create template</string>
+    <string name="title_update_template">Update template</string>
     <string name="title_sessions">Sessions</string>
     <string name="title_profile">Profile</string>
     <string name="title_update_profile">Update profile</string>
@@ -24,14 +27,25 @@
     <string name="email_desc">Email:</string>
     <string name="password_desc">Password:</string>
     <string name="task_name">Task name</string>
+    <string name="template_name">Template name</string>
     <string name="duration">Duration</string>
     <string name="minutes">minutes</string>
+    <string name="time_minutes">%s minutes</string>
     <string name="create_session">Create session</string>
+    <string name="from_template">From template</string>
+    <string name="create_template">Create new template</string>
+    <string name="update_template">Update template</string>
     <string name="update_profile">Update profile</string>
     <string name="update_password">Update password</string>
     <string name="planned">Planned</string>
     <string name="finished_earlier">Finished ahead of time</string>
     <string name="completed">Completed</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="delete_session">Delete session</string>
+    <string name="delete_session_confirmation">Are you sure you want to delete this session?</string>
+    <string name="delete_template">Delete template</string>
+    <string name="delete_template_confirmation">Are you sure you want to delete this template?</string>
 
     <string name="sign_in_error">Wrong email or password</string>
     <string name="sign_up_error">Wrong one of the fields</string>

@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="main_color">#2A52BE</color>
+    <color name="main_color_lower">#6179BA</color>
     <color name="main_color_transparency">#342A52BE</color>
     <color name="background_gray">#F5F5F5</color>
     <color name="main_text_color">#787777</color>
+
+    <color name="background_delete">#E13B3B</color>
 
     <color name="passed_session">#218007</color>
     <color name="not_passed_session">#AC3434</color>

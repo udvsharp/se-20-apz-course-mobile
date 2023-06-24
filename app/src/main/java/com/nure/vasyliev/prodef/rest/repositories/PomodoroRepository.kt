@@ -48,6 +48,24 @@ class PomodoroRepository {
         }
     }
 
+    suspend fun createPomodoroFromTemplate(userId: String, templateId: String) {
+        val apiService = ApiClient.create().create(PomodoroApi::class.java)
+        val response = apiService.createPomodoroFromTemplate(userId, templateId)
+
+        if (!response.isSuccessful) {
+            throw RuntimeException("Invalid token")
+        }
+    }
+
+    suspend fun deletePomodoro(pomodoroId: String) {
+        val apiService = ApiClient.create().create(PomodoroApi::class.java)
+        val response = apiService.deletePomodoro(pomodoroId)
+
+        if (!response.isSuccessful) {
+            throw RuntimeException("Invalid token")
+        }
+    }
+
     suspend fun startPomodoro(pomodoroId: String) {
         val apiService = ApiClient.create().create(PomodoroApi::class.java)
         apiService.startPomodoro(pomodoroId)

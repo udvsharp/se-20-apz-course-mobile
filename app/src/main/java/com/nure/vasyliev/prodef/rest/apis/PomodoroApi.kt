@@ -6,6 +6,7 @@ import com.nure.vasyliev.prodef.model.pomodoro.Pomodoros
 import com.nure.vasyliev.prodef.rest.payloads.pomodoro.PomodoroPayload
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -27,6 +28,17 @@ interface PomodoroApi {
         @Path("userId") userId: String,
         @Body payload: PomodoroPayload
     ): Response<Pomodoro>
+
+    @POST("api/pomodoro/{userId}/template/{templateId}")
+    suspend fun createPomodoroFromTemplate(
+        @Path("userId") userId: String,
+        @Path("templateId") templateId: String
+    ): Response<Pomodoro>
+
+    @DELETE("api/pomodoro/{pomodoroId}")
+    suspend fun deletePomodoro(
+        @Path("pomodoroId") pomodoroId: String
+    ) : Response<String>
 
     @POST("api/pomodoro/{userId}/start")
     suspend fun startPomodoro(

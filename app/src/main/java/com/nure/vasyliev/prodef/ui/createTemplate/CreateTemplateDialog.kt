@@ -1,4 +1,4 @@
-package com.nure.vasyliev.prodef.ui.createPomodoro
+package com.nure.vasyliev.prodef.ui.createTemplate
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,16 +10,16 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.nure.vasyliev.prodef.R
-import com.nure.vasyliev.prodef.databinding.FragmentCreateSessionBinding
-import com.nure.vasyliev.prodef.rest.repositories.PomodoroRepository
+import com.nure.vasyliev.prodef.databinding.FragmentCreateTemplateBinding
 import com.nure.vasyliev.prodef.rest.repositories.SharedPrefsRepository
+import com.nure.vasyliev.prodef.rest.repositories.TemplateRepository
 import com.nure.vasyliev.prodef.utils.setNavResult
 
-class CreateSessionDialog : BottomSheetDialogFragment() {
+class CreateTemplateDialog : BottomSheetDialogFragment() {
 
-    private lateinit var binding: FragmentCreateSessionBinding
+    private lateinit var binding: FragmentCreateTemplateBinding
 
-    private lateinit var createSessionViewModel: CreateSessionViewModel
+    private lateinit var createTemplateViewModel: CreateTemplateViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,19 +27,19 @@ class CreateSessionDialog : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         val sharedPrefsRepository = SharedPrefsRepository(requireContext())
-        val pomodoroRepository = PomodoroRepository()
+        val templateRepository = TemplateRepository()
 
-        val createSessionViewModelFactory = CreateSessionViewModelFactory(
+        val createTemplateViewModelFactory = CreateTemplateViewModelFactory(
             sharedPrefsRepository,
-            pomodoroRepository
+            templateRepository
         )
 
-        createSessionViewModel = ViewModelProvider(
+        createTemplateViewModel = ViewModelProvider(
             this,
-            createSessionViewModelFactory
-        )[CreateSessionViewModel::class.java]
+            createTemplateViewModelFactory
+        )[CreateTemplateViewModel::class.java]
 
-        binding = FragmentCreateSessionBinding.inflate(inflater, container, false)
+        binding = FragmentCreateTemplateBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -54,39 +54,34 @@ class CreateSessionDialog : BottomSheetDialogFragment() {
             binding.etDurationContainer.error = null
         }
 
-        binding.btnCreateSession.setOnClickListener {
+        binding.btnCreateTemplate.setOnClickListener {
             val taskName = binding.etTaskName.text.toString()
             val durationMins = binding.etDuration.text.toString()
-            createSessionViewModel.createPomodoro(taskName, durationMins)
-        }
-
-        binding.btnCreateFromTemplate.setOnClickListener {
-            val toFromTemplateDialog = CreateSessionDialogDirections.toFromTemplateDialog()
-            findNavController().navigate(toFromTemplateDialog)
+            createTemplateViewModel.createTemplate(taskName, durationMins)
         }
 
         setupObservers()
     }
 
     private fun setupObservers() {
-        createSessionViewModel.isSuccess.observe(viewLifecycleOwner) {
+        createTemplateViewModel.isSuccess.observe(viewLifecycleOwner) {
             if (it) {
-                setNavResult(R.id.sessionsFragment, RESULT, it)
+                setNavResult(R.id.fromTemplateDialog, RESULT, it)
                 findNavController().navigateUp()
             }
         }
-        createSessionViewModel.isLoading.observe(viewLifecycleOwner) {
+        createTemplateViewModel.isLoading.observe(viewLifecycleOwner) {
             binding.progressBar.isVisible = it
         }
-        createSessionViewModel.taskNameError.observe(viewLifecycleOwner) {
+        createTemplateViewModel.taskNameError.observe(viewLifecycleOwner) {
             binding.etNameContainer.error = requireContext().getString(R.string.task_name_error)
         }
-        createSessionViewModel.durationError.observe(viewLifecycleOwner) {
+        createTemplateViewModel.durationError.observe(viewLifecycleOwner) {
             binding.etDurationContainer.error = requireContext().getString(R.string.duration_error)
         }
     }
 
     companion object {
-        const val RESULT = "is_session_created"
+        const val RESULT = "is_template_created"
     }
 }
