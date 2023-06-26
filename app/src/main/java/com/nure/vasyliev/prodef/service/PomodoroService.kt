@@ -14,6 +14,7 @@ import android.os.Build
 import android.os.CountDownTimer
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavDeepLinkBuilder
 import com.nure.vasyliev.prodef.R
@@ -140,6 +141,7 @@ class PomodoroService : Service() {
             .setContentTitle(taskName)
             .setContentText(millis.toMmSsFormat())
             .setContentIntent(pendingIntent)
+            .setForegroundServiceBehavior(FOREGROUND_SERVICE_IMMEDIATE)
             .build()
     }
 
