@@ -13,6 +13,7 @@ import android.os.Build
 import android.os.CountDownTimer
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.nure.vasyliev.prodef.R
 import com.nure.vasyliev.prodef.rest.repositories.PomodoroRepository
 import com.nure.vasyliev.prodef.utils.MILLIS_IN_SECOND
@@ -49,7 +50,12 @@ class PomodoroService : Service() {
         pomodoroSharedPrefs = PomodoroSharedPrefs(applicationContext)
         notificationManager = getSystemService(NotificationManager::class.java)
 
-        registerReceiver(stopReceiver, IntentFilter(SEND_STOP))
+        ContextCompat.registerReceiver(
+            applicationContext,
+            stopReceiver,
+            IntentFilter(SEND_STOP),
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
 
         createNotificationChannel(notificationManager)
         val notification = createNotification(0, "")
@@ -144,7 +150,6 @@ class PomodoroService : Service() {
             _isForegroundStarted.value = false
             stopForeground(STOP_FOREGROUND_DETACH)
             notificationManager.cancel(NOTIFICATION_ID)
-            supervisor.cancelChildren()
             stopSelf()
         }
     }
@@ -154,8 +159,12 @@ class PomodoroService : Service() {
 
         stopForeground(STOP_FOREGROUND_DETACH)
         notificationManager.cancel(NOTIFICATION_ID)
+        try {
+            unregisterReceiver(stopReceiver)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         supervisor.cancelChildren()
-        unregisterReceiver(stopReceiver)
     }
 
     private val stopReceiver = object : BroadcastReceiver() {

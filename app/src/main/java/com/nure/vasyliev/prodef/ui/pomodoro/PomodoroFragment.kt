@@ -125,6 +125,8 @@ class PomodoroFragment : Fragment() {
                 }
             } else {
                 binding.ivPlayController.setOnClickListener {  }
+                binding.layoutTask.layoutPomodoro.isVisible = false
+                binding.tvTimer.text = ""
             }
         }
         pomodoroViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
