@@ -3,6 +3,7 @@ package com.nure.vasyliev.prodef.service
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -14,6 +15,7 @@ import android.os.CountDownTimer
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavDeepLinkBuilder
 import com.nure.vasyliev.prodef.R
 import com.nure.vasyliev.prodef.rest.repositories.PomodoroRepository
 import com.nure.vasyliev.prodef.utils.MILLIS_IN_SECOND
@@ -43,8 +45,15 @@ class PomodoroService : Service() {
     private val supervisor = SupervisorJob()
     private val coroutineScope = CoroutineScope(Dispatchers.Main + supervisor)
 
+    private var pendingIntent: PendingIntent? = null
+
     override fun onCreate() {
         super.onCreate()
+
+        pendingIntent = NavDeepLinkBuilder(applicationContext)
+            .setGraph(R.navigation.mobile_navigation)
+            .setDestination(R.id.pomodoroFragment)
+            .createPendingIntent()
 
         pomodoroRepository = PomodoroRepository()
         pomodoroSharedPrefs = PomodoroSharedPrefs(applicationContext)
@@ -130,6 +139,7 @@ class PomodoroService : Service() {
             .setSmallIcon(R.drawable.ic_play)
             .setContentTitle(taskName)
             .setContentText(millis.toMmSsFormat())
+            .setContentIntent(pendingIntent)
             .build()
     }
 
