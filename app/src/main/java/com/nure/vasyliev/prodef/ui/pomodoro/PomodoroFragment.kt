@@ -1,14 +1,18 @@
 package com.nure.vasyliev.prodef.ui.pomodoro
 
+import android.Manifest
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -45,6 +49,21 @@ class PomodoroFragment : Fragment() {
     private val supervisor = SupervisorJob()
     private val coroutineScope = CoroutineScope(Dispatchers.IO + supervisor)
 
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) {
+    }
+
+    private fun askNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) !=
+                PackageManager.PERMISSION_GRANTED
+            ) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -76,6 +95,8 @@ class PomodoroFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        askNotificationPermission()
+
         binding.ivPlayController.isEnabled = false
         binding.layoutTask.layoutPeriod.isVisible = false
 
@@ -89,11 +110,15 @@ class PomodoroFragment : Fragment() {
         }
         pomodoroViewModel.isStarted.observe(viewLifecycleOwner) { isStarted ->
             if (isStarted) {
-                isBounded = appContext.bindService(
-                    Intent(appContext, PomodoroService::class.java),
-                    pomodoroConnection,
-                    Context.BIND_AUTO_CREATE
-                )
+                try {
+                    isBounded = appContext.bindService(
+                        Intent(appContext, PomodoroService::class.java),
+                        pomodoroConnection,
+                        Context.BIND_AUTO_CREATE
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
                 binding.ivPlayController.setImageResource(R.drawable.ic_stop)
                 binding.ivPlayController.setOnClickListener {
                     val intent = Intent(PomodoroService.SEND_STOP)
@@ -106,7 +131,11 @@ class PomodoroFragment : Fragment() {
             } else {
                 binding.ivPlayController.setImageResource(R.drawable.ic_play)
                 binding.ivPlayController.setOnClickListener {
-                    startService()
+                    try {
+                        startService()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
             }
         }
@@ -127,6 +156,7 @@ class PomodoroFragment : Fragment() {
                 binding.ivPlayController.setOnClickListener {  }
                 binding.layoutTask.layoutPomodoro.isVisible = false
                 binding.tvTimer.text = ""
+                binding.cpiTimerProgress.progress = 0
             }
         }
         pomodoroViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->

@@ -185,7 +185,7 @@ class PomodoroService : Service() {
     }
 
     companion object {
-        private const val CHANNEL_NAME = "pomodoro_channel"
+        private const val CHANNEL_NAME = "Pomodoro channel"
         private const val CHANNEL_ID = "pomodoro_channel_id"
         private const val NOTIFICATION_ID = 121
 
